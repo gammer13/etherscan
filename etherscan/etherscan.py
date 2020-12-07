@@ -1,4 +1,5 @@
 # coding:utf-8
+import time
 import os
 import tempfile
 import requests_cache
@@ -122,8 +123,27 @@ class Client():
         self._params['module'] = 'account'
         self._params['action'] = 'balance'
         self._params['address'] = address
+        bal = self.__req()
+        while bal == "Max rate limit reached":
+            time.sleep(1)
+            bal = self.__req()
 
-        return int(self.__req())
+        return int(bal)
+
+    def get_token_balance(self, contractAdress: str, address: str):
+        """Get ETH balance by address."""
+        self._params['module'] = 'account'
+        self._params['action'] = 'tokenbalance'
+        self._params['contractaddress'] = contractAdress
+        self._params['address'] = address
+        self._params['tag'] = 'latest'
+
+        bal = self.__req()
+        while bal == "Max rate limit reached":
+            time.sleep(1)
+            bal = self.__req()
+
+        return int(bal)
 
     def get_eth_balances(self, addresses: list):
         """Get ETH balances by addresses list."""
